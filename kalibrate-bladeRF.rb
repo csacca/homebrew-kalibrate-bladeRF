@@ -13,16 +13,19 @@ class KalibrateBladerf < Formula
   depends_on "pkgconfig" => :build
   depends_on "fftw"
 
-  def install
-    # ENV.deparallelize  # if your formula fails when building in parallel
+  patch do
+    url "https://raw.githubusercontent.com/csacca/homebrew-kalibrate-bladeRF/master/el-capitan.diff"
+    sha256 "65247c2839d7dfc58d96df917f5aa967210d32ace66b21dcc85377204cf98b79"
+  end
 
+  def install
     args = %W[
         CC=#{ENV.cc}
         CXX=#{ENV.cxx}
       ]
 
     system "./bootstrap"
-    # Remove unrecognized options if warned by configure
+    
     system "./configure", "--disable-dependency-tracking",
                           "--disable-silent-rules",
                           "--prefix=#{prefix}",
@@ -31,16 +34,4 @@ class KalibrateBladerf < Formula
     system "make", "install" # if this fails, try separate make/make install steps
   end
 
-  test do
-    # `test do` will create, run in and delete a temporary directory.
-    #
-    # This test will fail and we won't accept that! It's enough to just replace
-    # "false" with the main program this formula installs, but it'd be nice if you
-    # were more thorough. Run the test with `brew test kalibrate`. Options passed
-    # to `brew install` such as `--HEAD` also need to be provided to `brew test`.
-    #
-    # The installed folder is not in the path, so use the entire path to any
-    # executables being tested: `system "#{bin}/program", "do", "something"`.
-    system "false"
-  end
 end
